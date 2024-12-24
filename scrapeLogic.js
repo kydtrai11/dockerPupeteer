@@ -3,8 +3,8 @@ require("dotenv").config();
 
 const scrapeLogic = async (res) => {
   try {
+    console.log(0);
     const url = "https://vivicomi.life/hy-vong-ve-tuong-lai-cua-be-con-that-u-am-chap-5/"
-    const imgSrcs = [];
     const browser = await puppeteer.launch({
       args: [
         "--disable-setuid-sandbox",
@@ -17,27 +17,29 @@ const scrapeLogic = async (res) => {
           ? process.env.PUPPETEER_EXECUTABLE_PATH
           : puppeteer.executablePath(),
     });
+
+
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-    await page.waitForSelector(".view-chapter");
+    console.log(2);
+
+    const asd = await page.waitForSelector(".view-chapter");
+    const imageSrc = []
+    console.log(asd);
     const images = await page.evaluate(() => {
+      console.log(123);
+
       const thumbnails = document.querySelectorAll('.view-chapter');
+      console.log(4);
+
       thumbnails.forEach(thumbnail => {
         const imgs = thumbnail.querySelectorAll('img');
-        imgs.forEach((img, index) => {
-          const imageAtb = img.getAttribute('src')
-          if (imageAtb == "https://vivicomi.live/wp-content/uploads/2024/11/10916059-copy-scaled.webp" ||
-            imageAtb == 'https://vivicomi.live/wp-content/uploads/2024/11/10916059-copy-1-scaled.webp') {
-            return
-          }
-          imgSrcs.push(imageAtb);
-        });
+        console.log(imgs);
       });
-      return imgSrcs;
     });
     await browser.close();
-    console.log(imgSrcs);
-    return imgSrcs
+    return 0
+
   } catch (err) {
     return console.log({ "error getImageVycomic": err })
   }

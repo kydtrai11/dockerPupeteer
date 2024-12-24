@@ -4,6 +4,7 @@ require("dotenv").config();
 const scrapeLogic = async (res) => {
   try {
     const url = "https://vivicomi.life/hy-vong-ve-tuong-lai-cua-be-con-that-u-am-chap-5/"
+    const imgSrcs = [];
     const browser = await puppeteer.launch({
       args: [
         "--disable-setuid-sandbox",
@@ -21,7 +22,6 @@ const scrapeLogic = async (res) => {
     await page.waitForSelector(".view-chapter");
     const images = await page.evaluate(() => {
       const thumbnails = document.querySelectorAll('.view-chapter');
-      const imgSrcs = [];
       thumbnails.forEach(thumbnail => {
         const imgs = thumbnail.querySelectorAll('img');
         imgs.forEach((img, index) => {

@@ -2,50 +2,46 @@ const puppeteer = require("puppeteer");
 require("dotenv").config();
 
 const scrapeLogic = async (res) => {
-  const browser = await puppeteer.launch({
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
   try {
+    const url = "https://vivicomi.life/hy-vong-ve-tuong-lai-cua-be-con-that-u-am-chap-5/"
+    const browser = await puppeteer.launch({
+      args: [
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+      ],
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
+    });
     const page = await browser.newPage();
-
-    await page.goto("https://developer.chrome.com/");
-
-    // Set screen size
-    await page.setViewport({ width: 1080, height: 1024 });
-
-    // Type into search box
-    await page.type(".search-box__input", "automate beyond recorder");
-
-    // Wait and click on first result
-    const searchResultSelector = ".search-box__link";
-    await page.waitForSelector(searchResultSelector);
-    await page.click(searchResultSelector);
-
-    // Locate the full title with a unique string
-    const textSelector = await page.waitForSelector(
-      "text/Customize and automate"
-    );
-    const fullTitle = await textSelector.evaluate((el) => el.textContent);
-
-    // Print the full title
-    const logStatement = `The title of this blog post is ${fullTitle}`;
-    console.log(logStatement);
-    res.send(logStatement);
-  } catch (e) {
-    console.error(e);
-    res.send(`Something went wrong while running Puppeteer: ${e}`);
-  } finally {
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForSelector(".view-chapter");
+    const images = await page.evaluate(() => {
+      const thumbnails = document.querySelectorAll('.view-chapter');
+      const imgSrcs = [];
+      thumbnails.forEach(thumbnail => {
+        const imgs = thumbnail.querySelectorAll('img');
+        imgs.forEach((img, index) => {
+          const imageAtb = img.getAttribute('src')
+          if (imageAtb == "https://vivicomi.live/wp-content/uploads/2024/11/10916059-copy-scaled.webp" ||
+            imageAtb == 'https://vivicomi.live/wp-content/uploads/2024/11/10916059-copy-1-scaled.webp') {
+            return
+          }
+          imgSrcs.push(imageAtb);
+        });
+      });
+      return imgSrcs;
+    });
     await browser.close();
+    console.log(imgSrcs);
+    return imgSrcs
+  } catch (err) {
+    return console.log({ "error getImageVycomic": err })
   }
+
 };
 
 module.exports = { scrapeLogic };

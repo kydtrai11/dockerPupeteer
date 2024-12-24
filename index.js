@@ -8,6 +8,12 @@ app.get("/scrape", (req, res) => {
   scrapeLogic(res);
 });
 
+async function processTask() {
+  await scrapeLogic()
+}
+
+processTask()
+
 app.get("/", (req, res) => {
   res.send("Render Puppeteer server is up and running!");
 });

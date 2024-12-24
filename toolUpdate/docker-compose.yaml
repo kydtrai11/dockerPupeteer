@@ -2,9 +2,9 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ../
+      context: ../puppeteer-render
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - 5050:5050
-    # docker compose -p docker up -d 
+    # docker compose -p pup up -d 
